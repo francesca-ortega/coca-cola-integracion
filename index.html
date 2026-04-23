@@ -39,10 +39,10 @@
             grid-column: 1 / -1;
             text-align: center;
             border-bottom: 2px solid #eee;
-            padding-bottom: 15px;
+            padding-bottom: 10px;
         }
-        .header h1 { margin: 0; color: var(--primary); font-size: 1.8rem; }
-        .header p { color: #666; font-size: 1rem; margin-top: 10px; }
+        .header h1 { margin: 0; color: var(--primary); font-size: 1.6rem; }
+        .header p { color: #666; font-size: 0.95rem; margin-top: 5px; }
         
         .panel-controles {
             background: #f8f9fa;
@@ -50,18 +50,18 @@
             border-radius: 8px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 15px;
             border: 1px solid #e1e4e8;
         }
         .control-group {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 5px;
         }
-        label { font-weight: bold; font-size: 0.9rem; color: var(--primary); }
+        label { font-weight: bold; font-size: 0.85rem; color: var(--primary); }
         select, input[type="range"] {
             width: 100%;
-            padding: 8px;
+            padding: 6px;
             border-radius: 5px;
             border: 1px solid #ccc;
             cursor: pointer;
@@ -69,23 +69,23 @@
         .toggle-group {
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-size: 0.9rem;
+            gap: 8px;
+            font-size: 0.85rem;
             color: #444;
         }
-        .toggle-group input { width: auto; cursor: pointer; transform: scale(1.2); }
+        .toggle-group input { width: auto; cursor: pointer; transform: scale(1.1); }
         
         .btn-optimizar {
             background-color: var(--primary);
             color: white;
             border: none;
-            padding: 12px;
+            padding: 10px;
             border-radius: 6px;
             font-weight: bold;
-            font-size: 1rem;
+            font-size: 0.95rem;
             cursor: pointer;
             transition: background 0.3s, transform 0.1s;
-            margin-top: 10px;
+            margin-top: 5px;
         }
         .btn-optimizar:hover { background-color: #1a252f; }
         .btn-optimizar:active { transform: scale(0.98); }
@@ -93,7 +93,7 @@
         .dashboard {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 15px;
         }
         .metricas {
             display: flex;
@@ -101,14 +101,15 @@
         }
         .tarjeta-metrica {
             flex: 1;
-            padding: 15px;
+            padding: 10px;
             border-radius: 8px;
             text-align: center;
             font-weight: bold;
+            font-size: 0.85rem;
             color: white;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-        .tarjeta-metrica span { display: block; font-size: 1.6rem; margin-top: 5px; }
+        .tarjeta-metrica span { display: block; font-size: 1.4rem; margin-top: 5px; }
         .bg-transaccion { background-color: var(--transaction); }
         .bg-coordinacion { background-color: var(--coordination); }
         .bg-total { background-color: var(--total); }
@@ -116,22 +117,23 @@
         .caja-analisis {
             background: #e8f4fd;
             border-left: 5px solid var(--total);
-            padding: 15px;
+            padding: 12px;
             border-radius: 4px;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             color: #2c3e50;
-            min-height: 80px;
+            min-height: 60px;
             display: flex;
             align-items: center;
         }
 
-        canvas {
+        .contenedor-grafico {
             background: white;
             border: 1px solid #eee;
             border-radius: 8px;
             padding: 10px;
             width: 100%;
-            height: 350px;
+            height: 200px; /* Altura ajustada exactamente a 200px */
+            position: relative;
         }
         
         @media (max-width: 768px) {
@@ -144,7 +146,7 @@
 <div class="container">
     <div class="header">
         <h1>Simulador Estratégico: Naturaleza y Tamaño de la Firma</h1>
-        <p>Ajusta los parámetros teóricos de Coase y Williamson para explorar cómo determinan el punto óptimo de integración vertical de la empresa.</p>
+        <p>Ajusta los parámetros teóricos para explorar cómo determinan el punto óptimo de integración vertical.</p>
     </div>
 
     <div class="panel-controles">
@@ -163,7 +165,7 @@
             <label>Teoría de Williamson (Gobernanza):</label>
             <div class="toggle-group">
                 <input type="checkbox" id="checkActivos">
-                <label for="checkActivos" style="font-weight: normal; color: inherit;">Alta Especificidad de Activos (Ej. Fórmula Coca-Cola)</label>
+                <label for="checkActivos" style="font-weight: normal; color: inherit;">Alta Especificidad de Activos</label>
             </div>
             <div class="toggle-group">
                 <input type="checkbox" id="checkOportunismo">
@@ -192,183 +194,11 @@
             Mueve el deslizador para analizar el estado de la empresa.
         </div>
 
-        <canvas id="graficoCostos"></canvas>
+        <div class="contenedor-grafico">
+            <canvas id="graficoCostos"></canvas>
+        </div>
     </div>
 </div>
 
 <script>
     // Variables globales
-    let dataSets = { x: [], ct: [], cc: [], total: [] };
-    let indiceOptimo = 0;
-
-    // Elementos DOM
-    const slideIntegracion = document.getElementById('slideIntegracion');
-    const valIntegracion = document.getElementById('valIntegracion');
-    const escenarioMacro = document.getElementById('escenarioMacro');
-    const checkActivos = document.getElementById('checkActivos');
-    const checkOportunismo = document.getElementById('checkOportunismo');
-    const txtCT = document.getElementById('txtCT');
-    const txtCC = document.getElementById('txtCC');
-    const txtTotal = document.getElementById('txtTotal');
-    const cajaAnalisis = document.getElementById('cajaAnalisis');
-    const btnOptimizar = document.getElementById('btnOptimizar');
-
-    // Función principal de cálculo
-    function recalcularModelo() {
-        dataSets = { x: [], ct: [], cc: [], total: [] };
-        
-        // Multiplicadores Base
-        let k_transaccion = 4000;
-        let k_coordinacion = 0.025;
-
-        // Ajustes por Escenario Macro
-        if (escenarioMacro.value === 'crisis') k_transaccion += 3000; // Mercado muy caro/riesgoso
-        if (escenarioMacro.value === 'innovacion') k_coordinacion -= 0.015; // Jerarquía muy eficiente
-
-        // Ajustes por Gobernanza (Williamson)
-        if (checkActivos.checked) k_transaccion += 2500;
-        if (checkOportunismo.checked) k_transaccion += 2000;
-
-        let minCosto = Infinity;
-
-        // Generar curvas
-        for (let i = 5; i <= 95; i++) {
-            dataSets.x.push(i);
-            
-            // Función convexa para Transacción (baja al integrar)
-            let ct = k_transaccion / i; 
-            
-            // Función exponencial/cóncava para Coordinación (sube al integrar por burocracia)
-            let cc = Math.pow(i, 2) * k_coordinacion; 
-            
-            let total = ct + cc;
-
-            dataSets.ct.push(ct);
-            dataSets.cc.push(cc);
-            dataSets.total.push(total);
-
-            // Guardar el índice del punto óptimo real
-            if (total < minCosto) {
-                minCosto = total;
-                indiceOptimo = i - 5;
-            }
-        }
-        
-        actualizarGrafico();
-        actualizarUI(slideIntegracion.value);
-    }
-
-    // Inicializar Gráfico (Chart.js)
-    const ctx = document.getElementById('graficoCostos').getContext('2d');
-    const costChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: [],
-            datasets: [
-                { label: 'Costo de Transacción (Mercado)', data: [], borderColor: '#e67e22', borderWidth: 3, pointRadius: 0, tension: 0.4 },
-                { label: 'Costo de Coordinación (Jerarquía)', data: [], borderColor: '#e74c3c', borderWidth: 3, pointRadius: 0, tension: 0.4 },
-                { label: 'Costo Total (Suma)', data: [], borderColor: '#2980b9', borderWidth: 4, pointRadius: 0, tension: 0.4 }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            animation: { duration: 500, easing: 'easeOutQuart' },
-            plugins: { tooltip: { enabled: false }, legend: { position: 'bottom' } },
-            scales: {
-                x: { title: { display: true, text: 'Grado de Integración Vertical (%)', font: { weight: 'bold' } } },
-                y: { title: { display: true, text: 'Costos Relativos', font: { weight: 'bold' } }, ticks: { display: false } }
-            }
-        }
-    });
-
-    // Línea vertical interactiva
-    const verticalLinePlugin = {
-        id: 'verticalLine',
-        afterDraw: (chart) => {
-            if (chart.tooltip._active && chart.tooltip._active.length) {
-                const activePoint = chart.tooltip._active[0];
-                const ctx = chart.ctx;
-                const x = activePoint.element.x;
-                ctx.save();
-                ctx.beginPath();
-                ctx.moveTo(x, chart.scales.y.top);
-                ctx.lineTo(x, chart.scales.y.bottom);
-                ctx.lineWidth = 2;
-                ctx.strokeStyle = '#34495e';
-                ctx.setLineDash([5, 5]);
-                ctx.stroke();
-                ctx.restore();
-            }
-        }
-    };
-    Chart.register(verticalLinePlugin);
-
-    // Actualizar datos del gráfico
-    function actualizarGrafico() {
-        costChart.data.labels = dataSets.x;
-        costChart.data.datasets[0].data = dataSets.ct;
-        costChart.data.datasets[1].data = dataSets.cc;
-        costChart.data.datasets[2].data = dataSets.total;
-        costChart.update();
-    }
-
-    // Actualizar interfaz basada en el slider
-    function actualizarUI(valor) {
-        valIntegracion.innerText = valor;
-        const index = valor - 5;
-        
-        // Actualizar tarjetas
-        txtCT.innerText = dataSets.ct[index].toFixed(0);
-        txtCC.innerText = dataSets.cc[index].toFixed(0);
-        txtTotal.innerText = dataSets.total[index].toFixed(0);
-
-        // Feedback dinámico
-        const integracionOptima = dataSets.x[indiceOptimo];
-        let mensaje = "";
-        
-        if (Math.abs(valor - integracionOptima) <= 3) {
-            mensaje = "<strong>✅ Punto Óptimo Alcanzado (I*):</strong> La empresa ha equilibrado perfectamente los costos de utilizar el mercado frente a los costos de la burocracia interna. Tamaño ideal.";
-            cajaAnalisis.style.borderLeftColor = "#27ae60";
-            cajaAnalisis.style.backgroundColor = "#eafaf1";
-        } else if (valor < integracionOptima) {
-            mensaje = "<strong>⚠️ Sub-integración:</strong> La empresa está utilizando demasiado el mercado. Los costos de transacción (riesgos, contratos, búsqueda) son excesivos. Debería internalizar más procesos.";
-            cajaAnalisis.style.borderLeftColor = "#f39c12";
-            cajaAnalisis.style.backgroundColor = "#fef5e7";
-        } else {
-            mensaje = "<strong>⚠️ Sobre-integración:</strong> La empresa es demasiado grande. Los costos de coordinación (burocracia, dispersión, ineficiencia) están mermando la rentabilidad. Debería subcontratar o usar el mercado.";
-            cajaAnalisis.style.borderLeftColor = "#c0392b";
-            cajaAnalisis.style.backgroundColor = "#fdedec";
-        }
-        cajaAnalisis.innerHTML = mensaje;
-
-        // Posicionar el "hover" dinámico en el gráfico
-        if(costChart.getDatasetMeta(0).data[index]) {
-            const meta0 = costChart.getDatasetMeta(0);
-            costChart.tooltip.setActiveElements([
-                { datasetIndex: 0, index: index },
-                { datasetIndex: 1, index: index },
-                { datasetIndex: 2, index: index }
-            ], { x: meta0.data[index].x, y: meta0.data[index].y });
-            costChart.update();
-        }
-    }
-
-    // Listeners
-    slideIntegracion.addEventListener('input', (e) => actualizarUI(e.target.value));
-    escenarioMacro.addEventListener('change', recalcularModelo);
-    checkActivos.addEventListener('change', recalcularModelo);
-    checkOportunismo.addEventListener('change', recalcularModelo);
-    
-    btnOptimizar.addEventListener('click', () => {
-        const valorOptimo = dataSets.x[indiceOptimo];
-        slideIntegracion.value = valorOptimo;
-        actualizarUI(valorOptimo);
-    });
-
-    // Arrancar aplicación
-    recalcularModelo();
-
-</script>
-</body>
-</html>
