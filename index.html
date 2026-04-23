@@ -4,31 +4,58 @@
   <meta charset="UTF-8">
   <title>Integración Vertical - Coca-Cola</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9f9f9;
+      text-align: center;
+      margin: 40px;
+    }
+    h1 {
+      color: #c00;
+    }
+    #info {
+      margin-top: 20px;
+      font-size: 1.1em;
+      color: #333;
+    }
+    canvas {
+      max-width: 800px;
+      margin: auto;
+    }
+  </style>
 </head>
 <body>
-  <h1>Punto Óptimo de Integración - Coca-Cola</h1>
+  <h1>Integración Vertical en Coca-Cola</h1>
+  <p>Usa el control para explorar cómo cambian los costos según el nivel de integración.</p>
+  
+  <input type="range" id="nivel" min="0" max="10" value="5" step="1" style="width:400px;">
+  <div id="info"></div>
+  
   <canvas id="grafico"></canvas>
+
   <script>
     const ctx = document.getElementById('grafico').getContext('2d');
-
     const niveles = Array.from({length: 11}, (_, i) => i);
+
+    // Costos simulados
     const costosTransaccion = niveles.map(x => 10 - x); 
     const costosCoordinacion = niveles.map(x => x);     
     const costosTotales = niveles.map((x, i) => costosTransaccion[i] + costosCoordinacion[i]);
 
-    new Chart(ctx, {
+    const chart = new Chart(ctx, {
       type: 'line',
       data: {
         labels: niveles,
         datasets: [
           {
-            label: 'Costos de Transacción',
+            label: 'Costos de Transacción (Mercado)',
             data: costosTransaccion,
             borderColor: 'blue',
             fill: false
           },
           {
-            label: 'Costos de Coordinación',
+            label: 'Costos de Coordinación (Empresa)',
             data: costosCoordinacion,
             borderColor: 'green',
             fill: false
@@ -46,11 +73,31 @@
         plugins: {
           title: {
             display: true,
-            text: 'Curvas de costos según integración'
+            text: 'Curvas de costos según integración vertical'
           }
         }
       }
     });
+
+    // Texto dinámico según nivel
+    const info = document.getElementById('info');
+    const slider = document.getElementById('nivel');
+
+    function actualizarTexto(nivel) {
+      if (nivel <= 3) {
+        info.innerHTML = "🔵 Integración baja: Coca-Cola depende más del mercado. Riesgo en insumos (azúcar, agua) y menos control sobre distribución.";
+      } else if (nivel <= 7) {
+        info.innerHTML = "🟢 Integración media: Coca-Cola asegura insumos clave (concentrados) y controla marketing global, pero delega embotellado local.";
+      } else {
+        info.innerHTML = "🔴 Integración alta: Coca-Cola internaliza casi todo (producción, distribución, logística). Mayor control, pero también más burocracia.";
+      }
+    }
+
+    slider.addEventListener('input', e => {
+      actualizarTexto(parseInt(e.target.value));
+    });
+
+    actualizarTexto(5); // inicial
   </script>
 </body>
 </html>
