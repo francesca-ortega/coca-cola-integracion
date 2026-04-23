@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Integración Vertical - Coca-Cola</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <h1>Punto Óptimo de Integración - Coca-Cola</h1>
+  <canvas id="grafico"></canvas>
+  <script>
+    const ctx = document.getElementById('grafico').getContext('2d');
+
+    const niveles = Array.from({length: 11}, (_, i) => i);
+    const costosTransaccion = niveles.map(x => 10 - x); 
+    const costosCoordinacion = niveles.map(x => x);     
+    const costosTotales = niveles.map((x, i) => costosTransaccion[i] + costosCoordinacion[i]);
+
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: niveles,
+        datasets: [
+          {
+            label: 'Costos de Transacción',
+            data: costosTransaccion,
+            borderColor: 'blue',
+            fill: false
+          },
+          {
+            label: 'Costos de Coordinación',
+            data: costosCoordinacion,
+            borderColor: 'green',
+            fill: false
+          },
+          {
+            label: 'Costo Total',
+            data: costosTotales,
+            borderColor: 'red',
+            fill: false
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Curvas de costos según integración'
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
